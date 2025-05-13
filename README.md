@@ -172,7 +172,7 @@ Esta guía explica paso a paso cómo crear una aplicación Android para comunica
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-![Screenshot from 2025-05-13 02-13-50.png](:/f35a812a997c437ea9d7cabd26ee3f92)
+![Screenshot from 2025-05-13 02-13-50](https://github.com/user-attachments/assets/361904e5-6985-4639-9271-1a661083f0bb)
 
 **Características de la interfaz**:
 
