@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,9 +49,13 @@ public class MainActivity extends AppCompatActivity {
         adaptadorBluetooth = BluetoothAdapter.getDefaultAdapter();
 
         Set<BluetoothDevice> dispositivosEmparejados = adaptadorBluetooth.getBondedDevices();
-        for (BluetoothDevice dispositivo : dispositivosEmparejados) {
+        List<BluetoothDevice> listaDispositivosEmparejados = new ArrayList<>(dispositivosEmparejados);
+
+        for (int i = 0; i < listaDispositivosEmparejados.size(); i++) {
+            BluetoothDevice dispositivo = listaDispositivosEmparejados.get(i);
             listaDispositivos.add(dispositivo.getName() + "\n" + dispositivo.getAddress());
         }
+
         adaptador.notifyDataSetChanged();
 
         botonConectar.setEnabled(false);
