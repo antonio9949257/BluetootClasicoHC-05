@@ -440,12 +440,6 @@ Las operaciones Bluetooth deben ejecutarse en hilos secundarios porque:
 
 Para que funcione con un módulo HC-06, el sketch de Arduino sería similar a:
 
-arduino
-
-Copy
-
-Download
-
 ```
 char comando;
 int valor;
