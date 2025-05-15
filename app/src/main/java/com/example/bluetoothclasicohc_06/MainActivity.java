@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
-import android.os.Handler;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -20,7 +19,7 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    final UUID MI_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    final UUID UUID_ARDUINO_SERVICE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     BluetoothAdapter adaptadorBluetooth;
     BluetoothDevice dispositivoSeleccionado;
     BluetoothSocket socketBluetooth;
@@ -28,23 +27,22 @@ public class MainActivity extends AppCompatActivity {
     InputStream flujoEntrada;
     ArrayList<String> listaDispositivos = new ArrayList<>();
     boolean estaConectado = false;
-    TextView valorPotenciometro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView listaVistaDispositivos = findViewById(R.id.listaDispositivos);
-        Button botonConectar = findViewById(R.id.botonConectar);
-        Button botonDesconectar = findViewById(R.id.botonDesconectar);
-        Button botonEnviarOn = findViewById(R.id.botonEncender);
-        Button botonEnviarOff = findViewById(R.id.botonApagar);
-        TextView estadoConexion = findViewById(R.id.estadoConexion);
-        valorPotenciometro = findViewById(R.id.valorPotenciometro);
+        ListView listaDispositivosj = findViewById(R.id.listaDispositivos);
+        Button botonConectarj = findViewById(R.id.botonConectar);
+        Button botonDesconectarj = findViewById(R.id.botonDesconectar);
+        Button botonEncenderj = findViewById(R.id.botonEncender);
+        Button botonApagarj = findViewById(R.id.botonApagar);
+        TextView estadoConexionj = findViewById(R.id.estadoConexion);
+        TextView valorPotenciometroj = findViewById(R.id.valorPotenciometro);
 
         ArrayAdapter<String> adaptador = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaDispositivos);
-        listaVistaDispositivos.setAdapter(adaptador);
+        listaDispositivosj.setAdapter(adaptador);
 
         adaptadorBluetooth = BluetoothAdapter.getDefaultAdapter();
 
@@ -58,33 +56,33 @@ public class MainActivity extends AppCompatActivity {
 
         adaptador.notifyDataSetChanged();
 
-        botonConectar.setEnabled(false);
-        botonDesconectar.setEnabled(false);
-        botonEnviarOn.setEnabled(false);
-        botonEnviarOff.setEnabled(false);
+        botonConectarj.setEnabled(false);
+        botonDesconectarj.setEnabled(false);
+        botonEncenderj.setEnabled(false);
+        botonApagarj.setEnabled(false);
 
-        listaVistaDispositivos.setOnItemClickListener((parent, view, position, id) -> {
+        listaDispositivosj.setOnItemClickListener((parent, view, position, id) -> {
             String direccionMAC = listaDispositivos.get(position).split("\n")[1];
             dispositivoSeleccionado = adaptadorBluetooth.getRemoteDevice(direccionMAC);
-            estadoConexion.setText("Seleccionado: " + dispositivoSeleccionado.getName());
+            estadoConexionj.setText("Seleccionado: " + dispositivoSeleccionado.getName());
 
-            botonConectar.setEnabled(true);
+            botonConectarj.setEnabled(true);
         });
 
-        botonConectar.setOnClickListener(v -> new Thread(() -> {
+        botonConectarj.setOnClickListener(v -> new Thread(() -> {
             try {
-                socketBluetooth = dispositivoSeleccionado.createRfcommSocketToServiceRecord(MI_UUID);
+                socketBluetooth = dispositivoSeleccionado.createRfcommSocketToServiceRecord(UUID_ARDUINO_SERVICE);
                 socketBluetooth.connect();
                 flujoSalida = socketBluetooth.getOutputStream();
                 flujoEntrada = socketBluetooth.getInputStream();
                 estaConectado = true;
 
                 runOnUiThread(() -> {
-                    estadoConexion.setText("Conectado");
-                    botonConectar.setEnabled(false);
-                    botonDesconectar.setEnabled(true);
-                    botonEnviarOn.setEnabled(true);
-                    botonEnviarOff.setEnabled(true);
+                    estadoConexionj.setText("Conectado");
+                    botonConectarj.setEnabled(false);
+                    botonDesconectarj.setEnabled(true);
+                    botonEncenderj.setEnabled(true);
+                    botonApagarj.setEnabled(true);
                 });
 
                 new Thread(() -> {
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                             String datosRecibidos = new String(buffer, 0, bytes);
 
                             runOnUiThread(() -> {
-                                valorPotenciometro.setText("Valor: " + datosRecibidos.trim());
+                                valorPotenciometroj.setText("Valor: " + datosRecibidos.trim());
                             });
 
                         } catch (IOException e) {
@@ -107,34 +105,34 @@ public class MainActivity extends AppCompatActivity {
                 }).start();
 
             } catch (IOException e) {
-                runOnUiThread(() -> estadoConexion.setText("Error de conexión"));
+                runOnUiThread(() -> estadoConexionj.setText("Error de conexión"));
             }
         }).start());
 
-        botonDesconectar.setOnClickListener(v -> {
+        botonDesconectarj.setOnClickListener(v -> {
             try {
                 socketBluetooth.close();
                 estaConectado = false;
                 runOnUiThread(() -> {
-                    estadoConexion.setText("Desconectado");
-                    botonConectar.setEnabled(true);
-                    botonDesconectar.setEnabled(false);
-                    botonEnviarOn.setEnabled(false);
-                    botonEnviarOff.setEnabled(false);
-                    valorPotenciometro.setText("Valor: --");
+                    estadoConexionj.setText("Desconectado");
+                    botonConectarj.setEnabled(true);
+                    botonDesconectarj.setEnabled(false);
+                    botonEncenderj.setEnabled(false);
+                    botonApagarj.setEnabled(false);
+                    valorPotenciometroj.setText("Valor: --");
                 });
             } catch (IOException e) {
-                estadoConexion.setText("Error al desconectar");
+                estadoConexionj.setText("Error al desconectar");
             }
         });
 
-        botonEnviarOn.setOnClickListener(v -> {
+        botonEncenderj.setOnClickListener(v -> {
             try {
                 flujoSalida.write("E".getBytes());
             } catch (IOException e) {
             }
         });
-        botonEnviarOff.setOnClickListener(v ->{
+        botonApagarj.setOnClickListener(v ->{
             try {
                 flujoSalida.write("A".getBytes());
             } catch (IOException e) {
